@@ -1,0 +1,39 @@
+{
+    "id": "4_0_2_signals_staging", 
+    "properties": {
+        "secretSourcePipelineId": "4_0_2_signals_staging"
+    }, 
+    "stages": [
+        {
+            "id": "92053c5b-8eea-4fcf-b40f-7504da320761", 
+            "licensed": true, 
+            "mappings": [], 
+            "reservedFieldsMappingAllowed": false, 
+            "secretSourceStageId": "92053c5b-8eea-4fcf-b40f-7504da320761", 
+            "skip": true, 
+            "type": "field-mapping"
+        }, 
+        {
+            "advancedTextFieldsIndexing": true, 
+            "duplicateSingleValuedFields": false, 
+            "fieldsToExclude": [], 
+            "id": "e2b17430-43c4-4aec-ba70-8a75f1dea4dd", 
+            "licensed": true, 
+            "maxTextLengthForAdvancedIndexing": 100, 
+            "secretSourceStageId": "e2b17430-43c4-4aec-ba70-8a75f1dea4dd", 
+            "skip": true, 
+            "type": "solr-dynamic-field-name-mapping"
+        }, 
+        {
+            "bufferDocsForSolr": false, 
+            "dateFormats": [], 
+            "enforceSchema": true, 
+            "id": "3638c024-dbdb-43eb-87fc-7344a7f8fd98", 
+            "licensed": true, 
+            "params": [], 
+            "secretSourceStageId": "3638c024-dbdb-43eb-87fc-7344a7f8fd98", 
+            "skip": false, 
+            "type": "solr-index"
+        }
+    ]
+}

@@ -1,0 +1,123 @@
+{
+    "id": "_4.0.2_4.2.5_rules_migration", 
+    "properties": {
+        "secretSourcePipelineId": "_4.0.2_4.2.5_rules_migration"
+    }, 
+    "stages": [
+        {
+            "id": "3z", 
+            "licensed": true, 
+            "mappings": [
+                {
+                    "operation": "delete", 
+                    "source": "attr_external_version_s_"
+                }, 
+                {
+                    "operation": "delete", 
+                    "source": "external_version_s"
+                }, 
+                {
+                    "operation": "delete", 
+                    "source": "new_id"
+                }, 
+                {
+                    "operation": "delete", 
+                    "source": "/(.*)_lw_(.*)/"
+                }
+            ], 
+            "reservedFieldsMappingAllowed": true, 
+            "secretSourceStageId": "3z", 
+            "skip": false, 
+            "type": "field-mapping"
+        }, 
+        {
+            "id": "qrh", 
+            "licensed": true, 
+            "rules": [
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "input_string", 
+                    "source": [
+                        "search_terms"
+                    ], 
+                    "target": "search_terms", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "input_string", 
+                    "source": [
+                        "param_keys"
+                    ], 
+                    "target": "param_keys", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "input_string", 
+                    "source": [
+                        "param_values"
+                    ], 
+                    "target": "param_values", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "input_string", 
+                    "source": [
+                        "param_policies"
+                    ], 
+                    "target": "param_policies", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "input_string", 
+                    "source": [
+                        "field_values"
+                    ], 
+                    "target": "field_values", 
+                    "writeMode": "overwrite"
+                }
+            ], 
+            "secretSourceStageId": "qrh", 
+            "skip": false, 
+            "type": "regex-extractor"
+        }, 
+        {
+            "condition": "", 
+            "id": "d3l", 
+            "label": "Uniquify field_values", 
+            "licensed": true, 
+            "script": "function (doc){\n  var field_values = doc.getFieldValues(\"field_values\");\n  var distinct_values = [];\n  \n  // Process array of dupes to uniquify\n  for each (var field1 in field_values){\n    var counter = 0;\n    for each (var field2 in distinct_values){\n      if(field1 === field2){\n        counter++;\n      }\n  \t}\n    if(counter > -1){\n       distinct_values.add(field);\n    }\n  }\n  // Send final distinct values to document\n  for each (var field in distinct_values){\n    doc.addField(\"distinct_values\",field);\n  }\n  return doc;\n}", 
+            "secretSourceStageId": "d3l", 
+            "skip": false, 
+            "type": "javascript-index"
+        }, 
+        {
+            "id": "0w5", 
+            "label": "Process rules", 
+            "licensed": true, 
+            "script": "/**********************\n* Date: 11/11/2019\n* Author: Kevin M. Butler\n* Purpose: Ingest an exported Solr->CSV of older PS rules plug-in from Fusion version 4.0.2 and convert them for use with \n*          Fusion 4.2.x\n* Additional steps needed:\n*   To parse the multi-valued fields from the CSV, create regex extraction stage and regex \n*   the following fields with overwrite [^, ][^,]*[^,]:\n*     search_terms\n*     param_keys\n*     param_values\n*     param_policies\n***********************/\n\nfunction(doc){\n  \n\t// Process banners and redirects\n\tif(doc.hasField(\"keys\")){\n\t  if (doc.getFirstFieldValue(\"keys\") == \"banner\"){\n\t\tdoc.setField(\"type\",\"banner\");\n\t\tdoc.addField(\"banner_url\",doc.getFirstFieldValue(\"values\"));\n\t\tdoc.addField(\"rollup\",\"Banner\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"keys\") == \"redirect\"){\n\t\tdoc.setField(\"type\",\"redirect\");\n\t\tdoc.addField(\"redirect_url\",doc.getFirstFieldValue(\"values\"));\n\t\tdoc.addField(\"rollup\",\"Redirect\");\n\t  }\n\t}\n\t\n\t// Process set_params, boost_list, and block_list(s)\n\tif(doc.hasField(\"type\")){\n\t  if (doc.getFirstFieldValue(\"type\") == \"set_params\"){\n\t\tdoc.addField(\"rollup\",\"Set Params\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"type\") == \"boost_list\"){\n\t\tdoc.addField(\"use_qec\",\"false\");\n\t\tdoc.addField(\"rollup\",\"Boost List\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"type\") == \"block_list\"){\n\t\tdoc.addField(\"rollup\",\"Block List\");\n\t  }\n\t}\n  \n\t// Common fields to all rules/documents\n\tdoc.setField(\"doc_type\",\"rule\");\n\tdoc.addField(\"name\",doc.getFirstFieldValue(\"ruleName\"));\n\tdoc.setField(\"createdOn\",doc.getFirstFieldValue(\"createdAt\"));\n\tdoc.setField(\"updatedOn\",doc.getFirstFieldValue(\"updatedAt\"));\n\tdoc.setField(\"priority\",\"1\");\n\tdoc.setField(\"review\",\"approved\");\n\tdoc.setField(\"deployed\",\"false\");\n\tdoc.removeFields(\"ruleName\");\n\tdoc.removeFields(\"createdAt\");\n\tdoc.removeFields(\"updatedAt\");\n\tdoc.removeFields(\"keys\");\n\tdoc.removeFields(\"values\");\n  \n\treturn doc;\n  }", 
+            "secretSourceStageId": "0w5", 
+            "skip": false, 
+            "type": "javascript-index"
+        }, 
+        {
+            "bufferDocsForSolr": false, 
+            "dateFormats": [], 
+            "enforceSchema": true, 
+            "id": "3171980a-b2be-4645-a038-3d953f002aa5", 
+            "licensed": true, 
+            "params": [], 
+            "secretSourceStageId": "3171980a-b2be-4645-a038-3d953f002aa5", 
+            "skip": false, 
+            "type": "solr-index"
+        }
+    ]
+}

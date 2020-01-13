@@ -1,0 +1,14 @@
+{
+    "contentType": "application/json", 
+    "dir": "/", 
+    "filename": "vzwsearch-all_rules.json", 
+    "id": "vzwsearch-all_rules.json", 
+    "md5": "8b47484b043f37ac7bbb8e5e0a682c3b", 
+    "metadata": {
+        "resourceType": "file"
+    }, 
+    "modifiedTime": "2020-01-07T12:48:54.820Z", 
+    "path": "/vzwsearch-all_rules.json", 
+    "size": 698491, 
+    "version": 1655073758060216320
+}

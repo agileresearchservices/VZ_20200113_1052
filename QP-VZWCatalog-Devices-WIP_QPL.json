@@ -1,0 +1,666 @@
+{
+    "id": "QP-VZWCatalog-Devices-WIP", 
+    "properties": {
+        "secretSourcePipelineId": "QP-VZWCatalog-Devices-WIP"
+    }, 
+    "stages": [
+        {
+            "id": "ho", 
+            "label": "Filter based on URI", 
+            "licensed": true, 
+            "script": "//var uri=\"/smartphones/apple/certified-pre-owned/\";\nvar uri = request.getFirstParam(\"uri\");\nvar prepaid = \"N\";\n\nif (uri !== null) {\n  if (uri.indexOf(\"/prepaid/\") > 0 ) { prepaid=\"Y\"; }\n  if (uri.indexOf(\"/\") == 0) { uri=uri.slice(1); }\n  if (uri.lastIndexOf(\"/\") == uri.length-1) { uri=uri.slice(0,uri.length-1); }\n  \n\n  var uriparts=uri.split(\"/\");\n  var fqString=\"\";\n  var i;\n  \n  for ( i = 0; i < uriparts.length; i++ ) {\n    if ( uriparts[i] == \"prepaid\" ) { continue; }\n    if ( i == 0 )  {\n      if ( prepaid == \"N\") {\n        fqString=fqString + \"( category_seo_url_name:\"+uriparts[i]; \n      } else {\n        fqString=fqString + \"( category_seo_url_name:prepaid-\"+uriparts[i];\n      }\n    }\n    else {\n      fqString=fqString+\" AND (brand_seo_url_name:\" + uriparts[i] + \" OR os_seo_url_name:\"+ uriparts[i] + \" OR specialoffers_seo_url_name:\"+ uriparts[i]+\" )\";\n    }\n  }\n  \n  fqString = fqString + \" )\";\n  request.addParam(\"fq\",fqString);\n}\n", 
+            "secretSourceStageId": "ho", 
+            "skip": false, 
+            "type": "javascript-query"
+        }, 
+        {
+            "id": "1z", 
+            "label": "Field List", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fl", 
+                    "policy": "replace", 
+                    "value": "recordTitle"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordDisplayPrice_fs"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "id"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordSource"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordDescription"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordLabel"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "score"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordUrl"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordContentType"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordSubcategory"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordDisplayInSearch"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "brand"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordDisplayBadgeText"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordDisplayBadgeTextTooltip"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordImageUrl"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "product.number_of_reviews"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "product.average_rating"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "product.display_name_s"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordDisplayPriceType"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "sku_price_edgeTerm"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "sku_price_edgeDiscountedFullRetailPrice"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "sku_price_fullRetailPrice_discounted"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "recordImageUrl"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "numFound"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "sku.color_style_s"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "color"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "sku.sor_id_s"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "sku_id"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "sku.sku_image_name_s"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "inventoryValue"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "ageValue"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "_lw_data_source_s"
+                }
+            ], 
+            "secretSourceStageId": "1z", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "3n9", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "defType", 
+                    "policy": "append", 
+                    "value": "edismax"
+                }, 
+                {
+                    "key": "mm", 
+                    "policy": "append", 
+                    "value": "50%"
+                }, 
+                {
+                    "key": "sow", 
+                    "policy": "append", 
+                    "value": "false"
+                }, 
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "-recordDisplayPrice_fs:[99999 TO *]"
+                }, 
+                {
+                    "key": "bq", 
+                    "policy": "append", 
+                    "value": "inventoryValue:0.0^-500"
+                }
+            ], 
+            "secretSourceStageId": "3n9", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "gxzh", 
+            "label": "Boost Popularity", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "bf", 
+                    "policy": "append", 
+                    "value": "popularity^3"
+                }
+            ], 
+            "secretSourceStageId": "gxzh", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "condition": "", 
+            "id": "1ed", 
+            "label": "Filter SellableOnlySku", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.isSellable:1 AND sku.showcaseFlag:0"
+                }
+            ], 
+            "secretSourceStageId": "1ed", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "cw", 
+            "label": "Filter PriceRecord", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku_price_fullRetailPrice_discounted:[99999 TO *]"
+                }
+            ], 
+            "secretSourceStageId": "cw", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "z0d", 
+            "label": "Filter SupportOnlySku", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.support_only_flag:0"
+                }
+            ], 
+            "secretSourceStageId": "z0d", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "ae", 
+            "label": "Filter GiftCard AccessoryOnly", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "-sku.sor_id:GCVZWcustom"
+                }
+            ], 
+            "secretSourceStageId": "ae", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "bx7", 
+            "label": "Filter ShowProduct AccessoryOnly", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "product.isValidProduct", 
+                    "policy": "append", 
+                    "value": "product.isValidProduct:1"
+                }
+            ], 
+            "secretSourceStageId": "bx7", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "condition": "", 
+            "id": "ujq", 
+            "label": "Filter VZWAccessoryInventoryOOS AccessoryOnly", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.doNotDisplayIfOutOfStock:1"
+                }, 
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.invType:O"
+                }
+            ], 
+            "secretSourceStageId": "ujq", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "aggrType": "click@doc_id,filters,query", 
+            "boostId": "id", 
+            "boostingMethod": "query-param", 
+            "boostingParam": "boost", 
+            "id": "7c8d08b6-6176-47c7-80bb-b814221c4180", 
+            "licensed": true, 
+            "numRecommendations": 100, 
+            "numSignals": 100, 
+            "queryParams": [
+                {
+                    "key": "qf", 
+                    "value": "query_t"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t^10"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t~2^7"
+                }, 
+                {
+                    "key": "mm", 
+                    "value": "80%"
+                }, 
+                {
+                    "key": "defType", 
+                    "value": "edismax"
+                }, 
+                {
+                    "key": "sort", 
+                    "value": "score desc, weight_d desc"
+                }
+            ], 
+            "rollupField": "doc_id_s", 
+            "rollupWeightField": "weight_d", 
+            "rollupWeightStrategy": "max", 
+            "secretSourceStageId": "7c8d08b6-6176-47c7-80bb-b814221c4180", 
+            "skip": true, 
+            "type": "recommendation", 
+            "weightExpression": "math:log(weight_d + 1) + 10 * math:log(score+1)"
+        }, 
+        {
+            "id": "nx", 
+            "label": "Rollup Aggregation", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "group", 
+                    "policy": "append", 
+                    "value": "true"
+                }, 
+                {
+                    "key": "group.field", 
+                    "policy": "append", 
+                    "value": "recordRollupId_s"
+                }, 
+                {
+                    "key": "group.limit", 
+                    "policy": "append", 
+                    "value": "10"
+                }, 
+                {
+                    "key": "group.ngroups", 
+                    "policy": "append", 
+                    "value": "true"
+                }, 
+                {
+                    "key": "group.sort", 
+                    "policy": "append", 
+                    "value": "score desc,sku.sku_capacity_size_i asc"
+                }, 
+                {
+                    "key": "group.facet", 
+                    "policy": "append", 
+                    "value": "true"
+                }
+            ], 
+            "secretSourceStageId": "nx", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "xue", 
+            "label": "Price Facets", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "facet.range", 
+                    "policy": "append", 
+                    "value": "recordDisplayPrice_fs"
+                }, 
+                {
+                    "key": "facet.range.start", 
+                    "policy": "append", 
+                    "value": "0"
+                }, 
+                {
+                    "key": "facet.range.end", 
+                    "policy": "append", 
+                    "value": "1500"
+                }, 
+                {
+                    "key": "facet.mincount", 
+                    "policy": "append", 
+                    "value": "1"
+                }, 
+                {
+                    "key": "facet.range.gap", 
+                    "policy": "append", 
+                    "value": "50"
+                }
+            ], 
+            "secretSourceStageId": "xue", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "pr", 
+            "label": "Search Interface", 
+            "licensed": true, 
+            "queryFields": [], 
+            "returnFields": [
+                "score", 
+                "*"
+            ], 
+            "rows": 10, 
+            "secretSourceStageId": "pr", 
+            "skip": false, 
+            "start": 0, 
+            "type": "search-fields"
+        }, 
+        {
+            "fieldFacets": [
+                {
+                    "field": "product.manufacturer.name_s", 
+                    "minCount": 1, 
+                    "missing": false
+                }, 
+                {
+                    "field": "sku.color_style_s", 
+                    "method": "enum", 
+                    "minCount": 1, 
+                    "missing": false
+                }, 
+                {
+                    "field": "recordContentType", 
+                    "minCount": 1, 
+                    "missing": false
+                }
+            ], 
+            "id": "c1e47bdb-a97d-4d8c-9d86-60e29e4bc4f7", 
+            "licensed": true, 
+            "secretSourceStageId": "c1e47bdb-a97d-4d8c-9d86-60e29e4bc4f7", 
+            "skip": false, 
+            "type": "facet"
+        }, 
+        {
+            "condition": "request.getFirstParam('rules') != 'off'", 
+            "id": "286", 
+            "label": "Rules: Set up 'tags' and 'now'", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "nowx", 
+                    "policy": "replace", 
+                    "value": "2016-03-14"
+                }, 
+                {
+                    "key": "tagsx", 
+                    "policy": "default", 
+                    "value": "PROD"
+                }, 
+                {
+                    "key": "tags_excludex", 
+                    "policy": "append", 
+                    "value": "A"
+                }, 
+                {
+                    "key": "defType", 
+                    "policy": "default", 
+                    "value": "edismax"
+                }, 
+                {
+                    "key": "enableElevation", 
+                    "policy": "default", 
+                    "value": "true"
+                }, 
+                {
+                    "key": "forceElevation", 
+                    "policy": "default", 
+                    "value": "true"
+                }, 
+                {
+                    "key": "fl", 
+                    "policy": "append", 
+                    "value": "[elevated],[excluded]"
+                }
+            ], 
+            "secretSourceStageId": "286", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "condition": "request.getFirstParam('rules') != 'off'", 
+            "id": "tr", 
+            "label": "Rules: Prepare sub-query", 
+            "licensed": true, 
+            "script": "var main_q = request.getFirstParam('q');\nif (main_q != '*:*' && main_q != '*') {\n  request.putSingleParam('main_q',main_q);\n} \n\nvar filters = request.getParam('fq');\nif (filters.size != 0) { \n  request.putSingleParam(\"filters\", java.lang.String.join(',',filters));\n}\n\nvar headers = request.headers;\nrequest.addParam('username', headers.getFirst('fusion-user-name'));\nrequest.addParam('roles', headers.get(\"fusion-role-names\"));\nrequest.addParam(\"headers\", headers.toString());\nrequest.putSingleParamIfAbsent('now', (new Date()).toISOString());\nrequest.putSingleParamIfAbsent('wt', 'json');", 
+            "secretSourceStageId": "tr", 
+            "skip": true, 
+            "type": "javascript-query"
+        }, 
+        {
+            "collection": "VZWSearch-All_rules", 
+            "condition": "request.getFirstParam('rules') != 'off'", 
+            "handler": "select", 
+            "headers": [], 
+            "id": "qys", 
+            "key": "applicable_rules_data", 
+            "label": "Rules: Retrieve Effective", 
+            "licensed": true, 
+            "method": "GET", 
+            "params": [
+                {
+                    "key": "fq", 
+                    "value": "-enabled:false"
+                }, 
+                {
+                    "key": "q", 
+                    "value": "{!lucene q.op=OR} {!switch v=$main_q case='-*:*' default=$keywords_q} {!switch v=$main_q case='-*:*' default=$contains_q} {!switch v=$main_q case='-*:*' default=$text_q} {!lucene v='*:* -search_terms:[* TO *]'}"
+                }, 
+                {
+                    "key": "keywords_q", 
+                    "value": "(+{!field f='search_terms_keywords' v=$main_q} +matching:keywords)"
+                }, 
+                {
+                    "key": "contains_q", 
+                    "value": "(+{!field f='search_terms_contains' v=$main_q} +matching:contains)"
+                }, 
+                {
+                    "key": "text_q", 
+                    "value": "(+{!edismax qf='search_terms' v=$main_q} +matching:text)"
+                }, 
+                {
+                    "key": "fq", 
+                    "value": "{!switch v=$filters case='*:* -filters:[* TO *]' default='{!lucene q.op=OR}{!terms f=filters v=$filters} (*:* -filters:[* TO *])'}"
+                }, 
+                {
+                    "key": "fq", 
+                    "value": "(*:* -username:[* TO *]) OR {!field f=username v=$username}"
+                }, 
+                {
+                    "key": "fq", 
+                    "value": "({!field f=effective_range v=$now} OR (*:* -effective_range:[* TO *]))"
+                }, 
+                {
+                    "key": "fq", 
+                    "value": "{!switch v=$tags tag=tags case='*:*'  default='{!terms f=tags v=$tags}'}"
+                }, 
+                {
+                    "key": "fq", 
+                    "value": "{!switch v=$tags_exclude tag=tags_exclude case='*:*'  default='-{!terms f=tags v=$tags_exclude}'}"
+                }, 
+                {
+                    "key": "facet", 
+                    "value": "on"
+                }, 
+                {
+                    "key": "facet.sort", 
+                    "value": "index"
+                }, 
+                {
+                    "key": "facet.field", 
+                    "value": "{!key=drill_down_tags}tags"
+                }, 
+                {
+                    "key": "facet.missing", 
+                    "value": "true"
+                }, 
+                {
+                    "key": "facet.field", 
+                    "value": "{!ex=tags,tags_exclude}tags"
+                }, 
+                {
+                    "key": "debug", 
+                    "value": "true"
+                }
+            ], 
+            "parentParams": [
+                "username", 
+                "tags_exclude", 
+                "tags", 
+                "now", 
+                "main_q", 
+                "filters"
+            ], 
+            "rollupKeys": [], 
+            "secretSourceStageId": "qys", 
+            "skip": true, 
+            "type": "sub-query"
+        }, 
+        {
+            "condition": "request.getFirstParam('rules') != 'off'", 
+            "id": "3il", 
+            "label": "Rules: Process", 
+            "licensed": true, 
+            "script": "// Use QueryElevationComponent, for boost and filter list rules.  If false, boosts and blocks are done with query parser and fq trickery\n// *** NOTE: With QEC, boost and block lists are for `id` ONLY\nvar use_qec = true;  \n\nfunction set_rules_ordered_q(rule_doc) {\n  var rules_ordered_q = \"\"\n  for(var val_index=0; val_index < rule_doc.field_values.size(); val_index++) {\n    var item_param = 'rules_item_' + val_index;  // TODO: unique this param by rule id?\n    request.putSingleParam(item_param, rule_doc.field_values[val_index]);\n    //rules_ordered_q += \"({!term f=\" + rule_doc.field_name + \" v=$\" + item_param + \"})^=\" + 100*(rule_doc.field_values.size() - val_index) + ' ';\n     rules_ordered_q += \"({!term f=\" + rule_doc.field_name + \" v=$\" + item_param + \"})^\" + 100*(rule_doc.field_values.size() - val_index) + ' ';\n\n  }\n  \n  request.putSingleParam('rules_ordered_q', rules_ordered_q);\n}\n\n\n//var ST = Java.type('org.stringtemplate.v4.ST');\n//var template = new ST('context: <context> :: request: <request.firstParam(\"main_q\")>');\n//template.add('context',context);\n//template.add('request',request);\n//request.putSingleParam(\"ST\",template.render());\n\nif (!ctx.hasProperty('applicable_rules')) { exit; }\n// TODO: or if rules numFound == 0?\n// TODO: set some context data if no rules data or zero rules?\n\nvar applicable_rules_data = ctx.getProperty('applicable_rules_data');\n\nvar rules_to_exclude = request.getParam('rules.exclude');\n\n// Arrays of things to put into response (by way of the ctx/context and the post-Solr stage)\nvar rules_response = {\n  \"excluded_rules\": [],\n  \"banners\": [],\n  \"redirects\": [],\n  \"applicable_rules\": [],\n  \"applicable_rules_ids\": [],\n  \"applicable_rules_debug\": [],\n  \"rules_errors\": []\n};\n\nif (applicable_rules_data.response.docs.size() != applicable_rules_data.response.numFound) {\n   rules_response[\"rules_errors\"].push((\"Not all matched rules processed: size=\" + applicable_rules_data.response.docs.size() + \" numFound=\" + applicable_rules_data.response.numFound).toString());\n}\n\nfor(var rule_index=0; rule_index < applicable_rules_data.response.docs.size(); rule_index++) {\n  var rule_doc = applicable_rules_data.response.docs[rule_index];\n  rules_response[\"applicable_rules_ids\"].push(rule_doc.id);\n  rules_response[\"applicable_rules\"].push(rule_doc);\n  rules_response[\"applicable_rules_debug\"].push(rule_doc.toString());\n  var excluded = false;\n\n  if (rules_to_exclude) {\n    // TODO: optimize this check, add support for comma-separated values too\n    for (var i=0; i < rules_to_exclude.size(); i++) {\n      if (rule_doc.id == rules_to_exclude[i]) {\n        excluded = true;\n        rules_response[\"excluded_rules\"].push(rules_to_exclude[i]);\n        break;\n      }\n    }\n  }\n\n  if (!excluded) {\n    var rule_type = rule_doc.type;\n\n    // Add response values - every rule type can have multivalued parallel keys/values values\n    if (rule_doc.keys) {\n      for (var kx=0; kx < rule_doc.keys.size(); kx++) {\n        if (!rules_response[rule_doc.keys[kx]]) { rules_response[rule_doc.keys[kx]] = []; }\n        rules_response[rule_doc.keys[kx]].push(rule_doc.values[kx]);\n      }\n    }\n\n    switch (rule_type) {\n      case 'response_value':   // e.g. key=\"banner\", \"redirect\"... etc\n        // response values evolved to being available for all rule types, but if all you\n        // want to do is set a banner this placeholder type suffices\n        break;\n\n      case 'set_params':\n        for (var px=0; px < rule_doc.param_keys.size(); px++) {\n\n          switch (rule_doc.param_policies[px]) {\n            case 'append':\n              request.addParam(rule_doc.param_keys[px], rule_doc.param_values[px]);\n              break\n\n            case 'replace':\n              request.putSingleParam(rule_doc.param_keys[px], rule_doc.param_values[px]);\n              break\n          }\n        }\n        break;\n\n      case 'query_rewrite':\n        // effectively same as a set_params replace of q\n        if (rule_doc.new_q) { request.putSingleParam(\"q\", rule_doc.new_q[0]); }\n        break;\n\n      case 'boost':\n        // boost_param=bq, boost_query=id:2^5\n        // effectively same as a set_params append of boost or bq.\n        request.addParam(rule_doc.boost_param, rule_doc.boost_query);\n        break;\n\n      case 'block_list':\n        // TODO: use_qec here to set excludeIds?   with fq at least any field can be used for block values\n        // effectively same as set_params append of an fq\n        request.addParam(\"fq\", \"-{!terms f=\" + rule_doc.field_name + \"}\" + Java.type('java.lang.String').join(',',rule_doc.field_values));\n        break;\n\n      case 'filter_list':\n        // effectively same as set_params append of an fq, and a replace of q with `field_name:val1^=N... field_name:valN^=1` (when not using QEC)\n        request.addParam(\"fq\", \"{!terms f=\" + rule_doc.field_name + \"}\" + Java.type('java.lang.String').join(',',rule_doc.field_values));\n\n        if (use_qec) {\n          request.addParam('elevateIds',Java.type('java.lang.String').join(',',rule_doc.field_values));\n        } else {\n          set_rules_ordered_q(rule_doc);\n          request.putSingleParam('q','{!lucene v=$rules_ordered_q}');\n        }\n\n        break;\n\n     case 'boost_list':\n        if (use_qec) {\n          // TODO: need to collect all boost_list rules together and make one list - Solr doesn't process multiple elevateIds it seems\n          request.addParam('elevateIds',Java.type('java.lang.String').join(',',rule_doc.field_values));\n        } else {\n          var orig_q = request.getFirstParam('q');\n          request.putSingleParam('orig_q',orig_q);\n          request.putSingleParam('orig_score','query({!edismax v=$orig_q})');\n          //request.putSingleParam('orig_scaled','scale($orig_score,1,99)');\n        \n          set_rules_ordered_q(rule_doc);\n          //request.putSingleParam('q','{!lucene}({!lucene v=$rules_ordered_q}) (-({!lucene v=$rules_ordered_q}) {!frange l=1 v=$orig_scaled})');\n           request.putSingleParam('q','{!lucene}({!lucene v=$rules_ordered_q}) (-({!lucene v=$rules_ordered_q}) {!lucene v=$orig_score})');\n\n        }\n\n        break;\n\n      default:\n        rules_response[\"rules_errors\"].push((\"Unknown rule type '\" + rule_type + \"' on rule \" + rule_doc.id).toString());\n        break;\n    }\n  }\n}\n\nctx.setProperty(\"rules_response\", rules_response);\n", 
+            "secretSourceStageId": "3il", 
+            "skip": true, 
+            "type": "javascript-query"
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "6b72a69b-1351-41eb-b6cf-35cd5be207f1", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "6b72a69b-1351-41eb-b6cf-35cd5be207f1", 
+            "skip": true, 
+            "type": "solr-query"
+        }, 
+        {
+            "condition": "request.getFirstParam('rules') != 'off'", 
+            "id": "j4", 
+            "label": "Rules: Augment Response", 
+            "licensed": true, 
+            "script": "function add_to_response(key, list) {\n  if (list.length > 0) {\n      response.initialEntity.appendStringList(key, Java.to(list, Java.type('java.util.List')));\n  }\n}\n\nvar rules_response = ctx.getProperty(\"rules_response\")\nif (rules_response) {\n  for (var k in rules_response) {\n    add_to_response(k, rules_response[k]);\n  }\n\n  // Duplicate redirect responses to supported landing-pages\n  if (rules_response[\"redirect\"]) {\n    add_to_response('landing-pages', rules_response[\"redirect\"]);\n  }\n}\n\n// This only works with JSON response format (wt=json); TODO: maybe convert the data to JSON and emit as a string?\nresponse.initialEntity.appendObject(\"applicable_rules_data\", ctx.getProperty('applicable_rules_data'));\n\n", 
+            "secretSourceStageId": "j4", 
+            "skip": true, 
+            "type": "javascript-query"
+        }
+    ]
+}

@@ -1,0 +1,103 @@
+{
+    "id": "VZWCatalog", 
+    "properties": {
+        "secretSourcePipelineId": "VZWCatalog"
+    }, 
+    "stages": [
+        {
+            "aggrType": "click@doc_id,filters,query", 
+            "boostId": "id", 
+            "boostingMethod": "query-param", 
+            "boostingParam": "boost", 
+            "id": "e27d0256-d5c0-4f52-8268-2d7938802031", 
+            "licensed": true, 
+            "numRecommendations": 10, 
+            "numSignals": 100, 
+            "queryParams": [
+                {
+                    "key": "qf", 
+                    "value": "query_t"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t^50"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t~3^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t~3^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t~3^5"
+                }, 
+                {
+                    "key": "boost", 
+                    "value": "map(query({!field f=query_s v=$q}),0,0,1,20)"
+                }, 
+                {
+                    "key": "mm", 
+                    "value": "50%"
+                }, 
+                {
+                    "key": "defType", 
+                    "value": "edismax"
+                }, 
+                {
+                    "key": "sort", 
+                    "value": "score desc, weight_d desc"
+                }
+            ], 
+            "rollupField": "doc_id_s", 
+            "rollupWeightField": "weight_d", 
+            "rollupWeightStrategy": "max", 
+            "secretSourceStageId": "e27d0256-d5c0-4f52-8268-2d7938802031", 
+            "skip": false, 
+            "type": "recommendation", 
+            "weightExpression": "math:log(weight_d + 1) + 10 * math:log(score+1)"
+        }, 
+        {
+            "id": "cd581903-e185-46c3-85b4-ecca75e5ce6b", 
+            "licensed": true, 
+            "queryFields": [], 
+            "returnFields": [
+                "*", 
+                "score"
+            ], 
+            "rows": 10, 
+            "secretSourceStageId": "cd581903-e185-46c3-85b4-ecca75e5ce6b", 
+            "skip": false, 
+            "start": 0, 
+            "type": "search-fields"
+        }, 
+        {
+            "fieldFacets": [], 
+            "id": "6e1fd611-0ec1-4466-88c3-b7997805bd37", 
+            "licensed": true, 
+            "secretSourceStageId": "6e1fd611-0ec1-4466-88c3-b7997805bd37", 
+            "skip": false, 
+            "type": "facet"
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "ae38ea87-b4cf-42a6-8d79-5af0f8136c91", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "ae38ea87-b4cf-42a6-8d79-5af0f8136c91", 
+            "skip": false, 
+            "type": "solr-query"
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "collection": "VZ_query_rewrite_staging", 
+    "id": "_export_rules", 
+    "queryPipeline": "_export_rules", 
+    "searchHandler": "select"
+}

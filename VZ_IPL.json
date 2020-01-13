@@ -1,0 +1,47 @@
+{
+    "id": "VZ", 
+    "properties": {
+        "secretSourcePipelineId": "VZ"
+    }, 
+    "stages": [
+        {
+            "id": "xjf", 
+            "licensed": true, 
+            "script": "function (doc){\n  var categories = [\"a\",\"b\",\"c\"];\n  var excludeCategories = [\"c\", \"x\"];\n\n  for (var i = 0; i < categories.length; i++){\n    var tripFlag = false;\n    for (var j = 0 ; j < excludeCategories.length; j++){\n      if(categories[i] == excludeCategories[j]){\n         tripFlag = true;\n      }\n    }\n    if (tripFlag == false){\n      doc.addField(\"_somefield_ss\",categories[i]); \n    }\n  } \n  return doc;\n}", 
+            "secretSourceStageId": "xjf", 
+            "skip": true, 
+            "type": "javascript-index"
+        }, 
+        {
+            "id": "e24b5790-fd7d-4b5f-93a5-260d65102eb8", 
+            "licensed": true, 
+            "mappings": [
+                {
+                    "operation": "move", 
+                    "source": "searchClicks", 
+                    "target": "popularity"
+                }, 
+                {
+                    "operation": "move", 
+                    "source": "searchQuery", 
+                    "target": "title"
+                }
+            ], 
+            "reservedFieldsMappingAllowed": false, 
+            "secretSourceStageId": "e24b5790-fd7d-4b5f-93a5-260d65102eb8", 
+            "skip": false, 
+            "type": "field-mapping"
+        }, 
+        {
+            "bufferDocsForSolr": false, 
+            "dateFormats": [], 
+            "enforceSchema": true, 
+            "id": "38c76cb6-f0ea-4d31-8b23-3104fbfda641", 
+            "licensed": true, 
+            "params": [], 
+            "secretSourceStageId": "38c76cb6-f0ea-4d31-8b23-3104fbfda641", 
+            "skip": false, 
+            "type": "solr-index"
+        }
+    ]
+}

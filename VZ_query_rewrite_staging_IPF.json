@@ -1,0 +1,6 @@
+{
+    "collection": "VZ_query_rewrite_staging", 
+    "id": "VZ_query_rewrite_staging", 
+    "indexPipeline": "VZ_query_rewrite_staging", 
+    "parser": "VZ"
+}

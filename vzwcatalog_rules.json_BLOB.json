@@ -1,0 +1,14 @@
+{
+    "contentType": "application/json", 
+    "dir": "/", 
+    "filename": "vzwcatalog_rules.json", 
+    "id": "vzwcatalog_rules.json", 
+    "md5": "528b1e4a856019b23e0ad7164cd37bd6", 
+    "metadata": {
+        "resourceType": "file"
+    }, 
+    "modifiedTime": "2020-01-07T12:48:54.630Z", 
+    "path": "/vzwcatalog_rules.json", 
+    "size": 540466, 
+    "version": 1655073757862035456
+}

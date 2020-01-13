@@ -1,0 +1,13 @@
+{
+    "commitWithin": 10000, 
+    "createdAt": "2019-11-05T14:20:40.621Z", 
+    "id": "VZ", 
+    "metadata": {}, 
+    "searchClusterId": "default", 
+    "solrParams": {
+        "name": "VZ", 
+        "numShards": 1, 
+        "replicationFactor": 1
+    }, 
+    "type": "DATA"
+}

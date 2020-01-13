@@ -1,0 +1,200 @@
+{
+    "id": "_rules_migration", 
+    "properties": {
+        "secretSourcePipelineId": "_rules_migration"
+    }, 
+    "stages": [
+        {
+            "id": "4xm", 
+            "label": "Tag document with rule version", 
+            "licensed": true, 
+            "script": "function (doc,ctx){\n  if(doc.hasField(\"ruleName\")){\n      ctx.put(\"ruleVersion\",\"402\");\n  }\n  if(doc.hasField(\"name\")){\n      ctx.put(\"ruleVersion\",\"425\");\n  }\n  return doc;\n}", 
+            "secretSourceStageId": "4xm", 
+            "skip": false, 
+            "type": "javascript-index"
+        }, 
+        {
+            "condition": "", 
+            "id": "r9x", 
+            "label": "Remove unwanted fields and set deployed=false", 
+            "licensed": true, 
+            "mappings": [
+                {
+                    "operation": "delete", 
+                    "source": "_version_"
+                }, 
+                {
+                    "operation": "delete", 
+                    "source": "/(.*)_lw_(.*)/"
+                }, 
+                {
+                    "operation": "set", 
+                    "source": "deployed", 
+                    "target": "false"
+                }
+            ], 
+            "reservedFieldsMappingAllowed": true, 
+            "secretSourceStageId": "r9x", 
+            "skip": false, 
+            "type": "field-mapping"
+        }, 
+        {
+            "condition": "ctx.getProperty(\"ruleVersion\")==\"425\";", 
+            "id": "ma", 
+            "label": "425 to 402 Regex Field Extraction", 
+            "licensed": true, 
+            "rules": [
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_keys"
+                    ], 
+                    "target": "param_keys", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_values"
+                    ], 
+                    "target": "param_values", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_policies"
+                    ], 
+                    "target": "param_policies", 
+                    "writeMode": "overwrite"
+                }
+            ], 
+            "secretSourceStageId": "ma", 
+            "skip": false, 
+            "type": "regex-extractor"
+        }, 
+        {
+            "condition": "ctx.getProperty(\"ruleVersion\")==\"425\";", 
+            "id": "it4", 
+            "label": "425 to 402 Process rules", 
+            "licensed": true, 
+            "script": "/**********************\n* Date: 1/8/2020\n* Author: Kevin M. Butler & RupeshKumarGuptha Darisa\n* Purpose: Ingest an exported Solr->CSV of PS rules plug-in from Fusion version 4.0.2 and convert them for use with \n*          Fusion 4.2.x and in reverse if a newer version of rules is detected\n* Additional steps needed:\n*   To parse the multi-valued fields from the CSV, create regex extraction stage and regex \n*   the following fields with overwrite [^, ][^,]*[^,]:\n*     search_terms\n*     param_keys\n*     param_values\n*     param_policies\n*     field_values\n***********************/\nfunction(doc){\n  \n  function arraytostring(arr){\n    var fields = arr;\n      var field = [];\n  \t\tfor(var f=0;f<fields.length;f++){\n\t\t      field = field + fields[f]+\",\";\n            }\n    return field.substring(0,field.length-1);\n    \n  }\n\t\n\tif(doc.hasField(\"type\")){\n      // Process banners and redirects\n      if (doc.getFirstFieldValue(\"type\") == \"banner\"){\n        //doc.removeFields(\"type\");\n        doc.setField(\"type\",\"response_value\");\n\t\tdoc.addField(\"keys\",\"banner\");\n\t\tdoc.addField(\"values\",doc.getFirstFieldValue(\"banner_url\"));\n        //doc.removeFields(\"banner_url\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"type\") == \"redirect\"){\n        //doc.removeFields(\"type\");\n        doc.setField(\"type\",\"response_value\");\n\t\tdoc.addField(\"keys\",\"redirect\");\n\t\tdoc.addField(\"values\",doc.getFirstFieldValue(\"redirect_url\"));\t\t\n        //doc.removeFields(\"redirect_url\");\n\t  }\n\t}\n  \n  if(doc.hasField(\"search_terms\")){\n      var fields = doc.getFieldValues(\"search_terms\");\n      var field = [];\n  \t\tfor(var f=0;f<fields.length;f++){\n\t\t      field = field + fields[f]+\",\";\n            }\n       doc.setField(\"search_terms\",field.substring(0,field.length-1));\n     }\n  \n    if(doc.hasField(\"field_values\")){\n     var fields = doc.getFieldValues(\"field_values\");\n      var field = [];\n  \t\tfor(var f=0;f<fields.length;f++){\n\t\t      field = field + fields[f]+\",\";\n            }\n      //doc.setField(\"field_values\",field.substring(0,field.length-1));\n     doc.setField(\"field_values\",arraytostring(doc.getFieldValues(\"field_values\")));\n     }\n  \n\t// Common fields to all rules/documents\n\tdoc.setField(\"doc_type\",doc.getFirstFieldValue(\"doc_type\"));\n\tdoc.addField(\"ruleName\",doc.getFirstFieldValue(\"name\"));\n\tdoc.setField(\"createdAt\",doc.getFirstFieldValue(\"createdOn\"));\n\tdoc.setField(\"updatedAt\",doc.getFirstFieldValue(\"updatedOn\"));\n\tdoc.setField(\"priority\",doc.getFirstFieldValue(\"priority\"));\n\tdoc.setField(\"review\",doc.getFirstFieldValue(\"review\"));\n\tdoc.setField(\"deployed\",doc.getFirstFieldValue(\"deployed\"));\n    doc.setField(\"rollup\",doc.getFirstFieldValue(\"rollup\"));\n  \n  doc.removeFields(\"banner_url\");\n  doc.removeFields(\"redirect_url\");\n  doc.removeFields(\"createdOn\");\n  doc.removeFields(\"updatedOn\");\n  doc.removeFields(\"name\");\n  \n  return doc;\n  }", 
+            "secretSourceStageId": "it4", 
+            "skip": false, 
+            "type": "javascript-index"
+        }, 
+        {
+            "condition": "ctx.getProperty(\"ruleVersion\")==\"402\";", 
+            "id": "3z", 
+            "label": "402 to 425 Field Mapping", 
+            "licensed": true, 
+            "mappings": [
+                {
+                    "operation": "delete", 
+                    "source": "attr_external_version_s_"
+                }, 
+                {
+                    "operation": "delete", 
+                    "source": "external_version_s"
+                }, 
+                {
+                    "operation": "delete", 
+                    "source": "new_id"
+                }
+            ], 
+            "reservedFieldsMappingAllowed": true, 
+            "secretSourceStageId": "3z", 
+            "skip": false, 
+            "type": "field-mapping"
+        }, 
+        {
+            "condition": "ctx.getProperty(\"ruleVersion\")==\"402\";", 
+            "id": "qrh", 
+            "label": "402 to 425 Regex Field Extraction", 
+            "licensed": true, 
+            "rules": [
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "input_string", 
+                    "source": [
+                        "search_terms"
+                    ], 
+                    "target": "search_terms", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_keys"
+                    ], 
+                    "target": "param_keys", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_values"
+                    ], 
+                    "target": "param_values", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_policies"
+                    ], 
+                    "target": "param_policies", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "field_values"
+                    ], 
+                    "target": "field_values", 
+                    "writeMode": "overwrite"
+                }
+            ], 
+            "secretSourceStageId": "qrh", 
+            "skip": false, 
+            "type": "regex-extractor"
+        }, 
+        {
+            "condition": "ctx.getProperty(\"ruleVersion\")==\"402\";", 
+            "id": "0w5", 
+            "label": "402 to 425 Process rules", 
+            "licensed": true, 
+            "script": "/**********************\n* Date: 1/8/2020\n* Author: Kevin M. Butler & RupeshKumarGuptha Darisa\n* Purpose: Ingest an exported Solr->CSV of PS rules plug-in from Fusion version 4.0.2 and convert them for use with \n*          Fusion 4.2.x and in reverse if a newer version of rules is detected\n* Additional steps needed:\n*   To parse the multi-valued fields from the CSV, create regex extraction stage and regex \n*   the following fields with overwrite [^, ][^,]*[^,]:\n*     search_terms\n*     param_keys\n*     param_values\n*     param_policies\n*     field_values\n***********************/\n\nfunction(doc){\n  \n/**********************\n* Date: 12/2/2019\n* Author: Kevin M. Butler\n* Purpose: Eliminate duplicate values in the field \"field_values\"\n* Additional steps needed:\n***********************/\n  // Define which fields to uniquify\n  var fields = [\"field_values\"];\n  \n  // Loop through each field, extract the values, clear the field, then re-add unique values\n  for(var f=0;f<fields.length;f++){\n    if(doc.hasField(fields[f])){\n      // Get values\n      var values = doc.getFieldValues(fields[f])\n      // Drop the field\n      doc.removeFields(fields[f])\n      // recreate \"field_values\" add unique values back\n      for (var v=0;v<values.length;v++){\n        doc.addFieldIfDifferent(fields[f],values[v].toLowerCase());\n      }\n    }\n  }\n  \n\t// Process banners and redirects\n\tif(doc.hasField(\"keys\")){\n\t  if (doc.getFirstFieldValue(\"keys\") == \"banner\"){\n\t\tdoc.setField(\"type\",\"banner\");\n\t\tdoc.addField(\"banner_url\",doc.getFirstFieldValue(\"values\"));\n\t\tdoc.addField(\"rollup\",\"Banner\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"keys\") == \"redirect\"){\n\t\tdoc.setField(\"type\",\"redirect\");\n\t\tdoc.addField(\"redirect_url\",doc.getFirstFieldValue(\"values\"));\n\t\tdoc.addField(\"rollup\",\"Redirect\");\n\t  }\n\t}\n\t\n\t// Process set_params, boost_list, and block_list(s)\n\tif(doc.hasField(\"type\")){\n\t  if (doc.getFirstFieldValue(\"type\") == \"set_params\"){\n\t\tdoc.addField(\"rollup\",\"Set Params\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"type\") == \"boost_list\"){\n\t\tdoc.addField(\"use_qec\",\"false\");\n\t\tdoc.addField(\"rollup\",\"Boost List\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"type\") == \"block_list\"){\n\t\tdoc.addField(\"rollup\",\"Block List\");\n\t  }\n\t}\n  \n\t// Common fields to all rules/documents\n\tdoc.setField(\"doc_type\",\"rule\");\n\tdoc.addField(\"name\",doc.getFirstFieldValue(\"ruleName\"));\n\tdoc.setField(\"createdOn\",doc.getFirstFieldValue(\"createdAt\"));\n\tdoc.setField(\"updatedOn\",doc.getFirstFieldValue(\"updatedAt\"));\n\tdoc.setField(\"priority\",\"1\");\n\tdoc.setField(\"review\",\"approved\");\n\tdoc.setField(\"deployed\",\"false\");\n\tdoc.removeFields(\"ruleName\");\n\tdoc.removeFields(\"createdAt\");\n\tdoc.removeFields(\"updatedAt\");\n\tdoc.removeFields(\"keys\");\n\tdoc.removeFields(\"values\");\n\n  return doc;\n  }", 
+            "secretSourceStageId": "0w5", 
+            "skip": false, 
+            "type": "javascript-index"
+        }, 
+        {
+            "bufferDocsForSolr": true, 
+            "condition": "doc.hasField('name') || doc.hasField('ruleName')", 
+            "dateFormats": [], 
+            "enforceSchema": true, 
+            "id": "3171980a-b2be-4645-a038-3d953f002aa5", 
+            "licensed": true, 
+            "params": [], 
+            "secretSourceStageId": "3171980a-b2be-4645-a038-3d953f002aa5", 
+            "skip": false, 
+            "type": "solr-index"
+        }
+    ]
+}

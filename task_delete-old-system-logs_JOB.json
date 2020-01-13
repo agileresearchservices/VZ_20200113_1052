@@ -1,0 +1,12 @@
+{
+    "default": false, 
+    "enabled": true, 
+    "resource": "task:delete-old-system-logs", 
+    "triggers": [
+        {
+            "enabled": true, 
+            "expression": "0 20 4 ? * SUN", 
+            "type": "cron"
+        }
+    ]
+}

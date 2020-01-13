@@ -1,0 +1,14 @@
+{
+    "default": false, 
+    "enabled": true, 
+    "resource": "spark:VZ_spell_correction", 
+    "triggers": [
+        {
+            "enabled": true, 
+            "interval": 1, 
+            "startTime": "2019-11-05T14:35:41.102Z", 
+            "timeUnit": "day", 
+            "type": "interval"
+        }
+    ]
+}

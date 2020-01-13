@@ -1,0 +1,179 @@
+{
+    "id": "QP-VZWCatalog-Devices", 
+    "properties": {
+        "secretSourcePipelineId": "QP-VZWCatalog-Devices"
+    }, 
+    "stages": [
+        {
+            "id": "jso", 
+            "label": "Set rows", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "rows", 
+                    "policy": "append", 
+                    "value": "999"
+                }
+            ], 
+            "secretSourceStageId": "jso", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "ho", 
+            "label": "Filter based on URI", 
+            "licensed": true, 
+            "script": "//var uri=\"/smartphones/apple/certified-pre-owned/\";\nvar uri = request.getFirstParam(\"uri\");\nvar prepaid = \"N\";\n\nif (uri !== null) {\n  if (uri.indexOf(\"/prepaid/\") > 0 ) { prepaid=\"Y\"; }\n  if (uri.indexOf(\"/\") == 0) { uri=uri.slice(1); }\n  if (uri.lastIndexOf(\"/\") == uri.length-1) { uri=uri.slice(0,uri.length-1); }\n  \n\n  var uriparts=uri.split(\"/\");\n  var fqString=\"\";\n  var i;\n  \n  for ( i = 0; i < uriparts.length; i++ ) {\n    if ( uriparts[i] == \"prepaid\" ) { continue; }\n    if ( i == 0 )  {\n      if ( prepaid == \"N\") {\n        fqString=fqString + \"( category_seo_url_name:\"+uriparts[i]; \n      } else {\n        fqString=fqString + \"( category_seo_url_name:prepaid-\"+uriparts[i];\n      }\n    }\n//    else {\n//      fqString=fqString+\" AND (brand_seo_url_name:\" + uriparts[i] + \" OR os_seo_url_name:\"+ uriparts[i] + \" OR special_offers_seo_url_name:\"+ uriparts[i]+\" )\";\n//    }\n  }\n  \n  fqString = fqString + \" )\";\n  request.addParam(\"fq\",fqString);\n}\n", 
+            "secretSourceStageId": "ho", 
+            "skip": false, 
+            "type": "javascript-query"
+        }, 
+        {
+            "id": "3n9", 
+            "label": "Bury OOS devices", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "bq", 
+                    "policy": "append", 
+                    "value": "inventoryValue:0.0^-500"
+                }
+            ], 
+            "secretSourceStageId": "3n9", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "condition": "", 
+            "id": "1ed", 
+            "label": "Filter SellableOnlySku", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.isSellable:1 AND sku.showcaseFlag:0"
+                }
+            ], 
+            "secretSourceStageId": "1ed", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "jh", 
+            "label": "5G Restrictions filter Devices", 
+            "licensed": true, 
+            "script": "var temp = \"-(category_seo_url_name:5g-home) OR -(category_seo_url_name:5g-internet)\" ;\nrequest.addParam(\"fq\",temp);", 
+            "secretSourceStageId": "jh", 
+            "skip": false, 
+            "type": "javascript-query"
+        }, 
+        {
+            "id": "cw", 
+            "label": "Filter PriceRecord", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku_price_fullRetailPrice_discounted:[99999 TO *]"
+                }
+            ], 
+            "secretSourceStageId": "cw", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "z0d", 
+            "label": "Filter SupportOnlySku", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.support_only_flag:0"
+                }
+            ], 
+            "secretSourceStageId": "z0d", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "ae", 
+            "label": "Filter GiftCard AccessoryOnly", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "-sku.sor_id:GCVZWcustom"
+                }
+            ], 
+            "secretSourceStageId": "ae", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "id": "bx7", 
+            "label": "Filter ShowProduct AccessoryOnly", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "product.isValidProduct", 
+                    "policy": "append", 
+                    "value": "product.isValidProduct:1"
+                }
+            ], 
+            "secretSourceStageId": "bx7", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "condition": "", 
+            "id": "ujq", 
+            "label": "Filter VZWAccessoryInventoryOOS AccessoryOnly", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.doNotDisplayIfOutOfStock:1"
+                }, 
+                {
+                    "key": "fq", 
+                    "policy": "append", 
+                    "value": "sku.invType:O"
+                }
+            ], 
+            "secretSourceStageId": "ujq", 
+            "skip": true, 
+            "type": "set-params"
+        }, 
+        {
+            "fieldFacets": [
+                {
+                    "field": "product_operating_system_s", 
+                    "method": "enum", 
+                    "minCount": 1, 
+                    "missing": false
+                }
+            ], 
+            "id": "c1e47bdb-a97d-4d8c-9d86-60e29e4bc4f7", 
+            "label": "Set OS facet", 
+            "licensed": true, 
+            "secretSourceStageId": "c1e47bdb-a97d-4d8c-9d86-60e29e4bc4f7", 
+            "skip": false, 
+            "type": "facet"
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "6b72a69b-1351-41eb-b6cf-35cd5be207f1", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "6b72a69b-1351-41eb-b6cf-35cd5be207f1", 
+            "skip": true, 
+            "type": "solr-query"
+        }
+    ]
+}

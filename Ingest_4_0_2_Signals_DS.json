@@ -1,0 +1,33 @@
+{
+    "connector": "lucid.solr", 
+    "created": "2019-12-24T15:42:03.870Z", 
+    "id": "Ingest_4_0_2_Signals", 
+    "modified": "2019-12-24T15:42:03.870Z", 
+    "pipeline": "_signals_ingest", 
+    "properties": {
+        "collection": "VZ_signals", 
+        "commit_on_finish": true, 
+        "initial_mapping": {
+            "id": "FromMap", 
+            "mappings": [
+                {
+                    "operation": "move", 
+                    "source": "_version_", 
+                    "target": "external_version_s"
+                }
+            ], 
+            "reservedFieldsMappingAllowed": false, 
+            "skip": false, 
+            "type": "field-mapping"
+        }, 
+        "solr_base_url": "http://192.168.1.194:8983/solr", 
+        "solr_field_list": "*", 
+        "solr_page_size": 100, 
+        "solr_query": "*:*", 
+        "solr_request_handler": "/select", 
+        "solr_sort_spec": "id asc", 
+        "source_collection": "VZ_signals_staging", 
+        "verify_access": true
+    }, 
+    "type": "solr"
+}

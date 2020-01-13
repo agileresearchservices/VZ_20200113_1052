@@ -1,0 +1,21 @@
+{
+    "analyzerConfig": "{ \"analyzers\": [{ \"name\": \"StdTokLowerStop\",\"charFilters\": [ { \"type\": \"htmlstrip\" } ],\"tokenizer\": { \"type\": \"standard\" },\"filters\": [{ \"type\": \"lowercase\" }] }],\"fields\": [{ \"regex\": \".+\", \"analyzer\": \"StdTokLowerStop\" } ]}", 
+    "attachPhrases": false, 
+    "dataFormat": "solr", 
+    "enableAutoPublish": false, 
+    "fieldToVectorize": "query", 
+    "id": "VZ_phrase_extraction", 
+    "minLikelihood": 0.1, 
+    "minmatch": 100, 
+    "ngramSize": 3, 
+    "outputCollection": "VZ_query_rewrite_staging", 
+    "overwriteOutput": true, 
+    "randomSeed": 8180, 
+    "sourceFields": "query", 
+    "stopwordsList": [], 
+    "trainingCollection": "VZ_signals", 
+    "trainingDataFilterQuery": "*:*", 
+    "trainingDataFrameConfigOptions": {}, 
+    "trainingDataSamplingFraction": 1.0, 
+    "type": "sip"
+}

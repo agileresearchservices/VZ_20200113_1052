@@ -1,0 +1,13 @@
+{
+    "commitWithin": 10000, 
+    "createdAt": "2019-12-12T00:02:49.088Z", 
+    "id": "VZ_recommender_models", 
+    "metadata": {}, 
+    "searchClusterId": "default", 
+    "solrParams": {
+        "name": "VZ_recommender_models", 
+        "numShards": 1, 
+        "replicationFactor": 1
+    }, 
+    "type": "RECOMMENDATIONS"
+}

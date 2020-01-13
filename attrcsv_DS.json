@@ -1,0 +1,14 @@
+{
+    "connector": "lucid.fileupload", 
+    "created": "2019-12-20T14:20:33.779Z", 
+    "id": "attrcsv", 
+    "modified": "2019-12-20T14:20:33.779Z", 
+    "parserId": "VZ", 
+    "pipeline": "VZ", 
+    "properties": {
+        "collection": "VZ", 
+        "fileId": "attr.csv", 
+        "mediaType": "application/octet-stream"
+    }, 
+    "type": "fileupload"
+}

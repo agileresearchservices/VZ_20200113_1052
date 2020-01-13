@@ -1,0 +1,28 @@
+{
+    "collection": "VZ", 
+    "id": "VZ_rules_simulator", 
+    "params": [
+        {
+            "key": "lw.rules.simulate", 
+            "policy": "default", 
+            "value": "VZ_query_rewrite_staging"
+        }, 
+        {
+            "key": "lw.rules.debug", 
+            "policy": "default", 
+            "value": "1"
+        }, 
+        {
+            "key": "lw.tagger.debug", 
+            "policy": "default", 
+            "value": "1"
+        }, 
+        {
+            "key": "lw.skip_response_signal", 
+            "policy": "default", 
+            "value": "1"
+        }
+    ], 
+    "queryPipeline": "VZ", 
+    "searchHandler": "/select"
+}

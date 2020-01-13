@@ -1,0 +1,14 @@
+{
+    "default": false, 
+    "enabled": true, 
+    "resource": "spark:VZ_click_signals_aggregation", 
+    "triggers": [
+        {
+            "enabled": true, 
+            "interval": 15, 
+            "startTime": "2019-11-05T14:35:51.007Z", 
+            "timeUnit": "minute", 
+            "type": "interval"
+        }
+    ]
+}

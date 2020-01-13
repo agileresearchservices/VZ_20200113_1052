@@ -1,0 +1,151 @@
+{
+    "id": "VZWCatalog_rules", 
+    "properties": {
+        "secretSourcePipelineId": "VZWCatalog_rules"
+    }, 
+    "stages": [
+        {
+            "id": "4df4ccfd-8020-4139-8b4a-5174e3ae1880", 
+            "licensed": true, 
+            "overlaps": "ALL", 
+            "paramToTag": "q", 
+            "params": [], 
+            "phraseBoost": 2.0, 
+            "phraseSlop": 10, 
+            "phrase_boosting_enabled": true, 
+            "secretSourceStageId": "4df4ccfd-8020-4139-8b4a-5174e3ae1880", 
+            "skip": false, 
+            "spell_corrections_enabled": true, 
+            "synonymExpansionBoost": 2.0, 
+            "synonym_expansion_enabled": true, 
+            "tail_rewrites_enabled": true, 
+            "type": "text-tagger", 
+            "useEmbeddedSolrServer": false
+        }, 
+        {
+            "aggrType": "click@doc_id,filters,query", 
+            "asyncConfig": {
+                "asyncId": "6132dbe2-3fd3-4ff8-8b3d-f2eec62dcc30", 
+                "enabled": false
+            }, 
+            "boostId": "id", 
+            "boostingMethod": "query-param", 
+            "boostingParam": "boost", 
+            "id": "6132dbe2-3fd3-4ff8-8b3d-f2eec62dcc30", 
+            "licensed": true, 
+            "numRecommendations": 10, 
+            "numSignals": 100, 
+            "queryParams": [
+                {
+                    "key": "qf", 
+                    "value": "query_t"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t^50"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t~3^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t~3^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t~3^5"
+                }, 
+                {
+                    "key": "boost", 
+                    "value": "map(query({!field f=query_s v=$q}),0,0,1,20)"
+                }, 
+                {
+                    "key": "mm", 
+                    "value": "50%"
+                }, 
+                {
+                    "key": "defType", 
+                    "value": "edismax"
+                }, 
+                {
+                    "key": "sort", 
+                    "value": "score desc, weight_d desc"
+                }
+            ], 
+            "rollupField": "doc_id_s", 
+            "rollupWeightField": "weight_d", 
+            "rollupWeightStrategy": "max", 
+            "secretSourceStageId": "6132dbe2-3fd3-4ff8-8b3d-f2eec62dcc30", 
+            "skip": false, 
+            "type": "recommendation", 
+            "weightExpression": "math:log(weight_d + 1) + 10 * math:log(score+1)"
+        }, 
+        {
+            "id": "4592e622-eebb-46b7-b102-bd50694c0a60", 
+            "licensed": true, 
+            "queryFields": [], 
+            "returnFields": [
+                "*", 
+                "score"
+            ], 
+            "rows": 10, 
+            "secretSourceStageId": "4592e622-eebb-46b7-b102-bd50694c0a60", 
+            "skip": false, 
+            "start": 0, 
+            "type": "search-fields"
+        }, 
+        {
+            "fieldFacets": [], 
+            "id": "2f406db4-b008-4b23-9569-b0f7403d106d", 
+            "licensed": true, 
+            "secretSourceStageId": "2f406db4-b008-4b23-9569-b0f7403d106d", 
+            "skip": false, 
+            "type": "facet"
+        }, 
+        {
+            "asyncConfig": {
+                "asyncId": "0aa2c687-f749-44cc-b20a-d11e560477cf", 
+                "enabled": false
+            }, 
+            "handler": "select", 
+            "headers": [], 
+            "id": "0aa2c687-f749-44cc-b20a-d11e560477cf", 
+            "licensed": true, 
+            "matchPartialFilterQueries": true, 
+            "method": "POST", 
+            "params": [], 
+            "secretSourceStageId": "0aa2c687-f749-44cc-b20a-d11e560477cf", 
+            "skip": false, 
+            "type": "query-rules", 
+            "useEmbeddedSolrServer": false, 
+            "useOriginalQueryIfNoRulesMatch": true
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "08340cac-ef01-4b24-b743-615bc70b9c22", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "08340cac-ef01-4b24-b743-615bc70b9c22", 
+            "skip": false, 
+            "type": "solr-query"
+        }, 
+        {
+            "facetLabelParseDelimiter": "||", 
+            "id": "cd18e6d7-a6a5-4b15-93e3-5f8df635481b", 
+            "licensed": true, 
+            "secretSourceStageId": "cd18e6d7-a6a5-4b15-93e3-5f8df635481b", 
+            "skip": false, 
+            "type": "query-rules-augment-response"
+        }
+    ]
+}

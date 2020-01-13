@@ -1,0 +1,6 @@
+{
+    "collection": "system_logs", 
+    "days": 30, 
+    "id": "delete-old-system-logs", 
+    "type": "system-logs-cleanup"
+}

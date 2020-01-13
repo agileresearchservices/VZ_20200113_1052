@@ -1,0 +1,143 @@
+{
+    "id": "VZ_Phrase_Detection", 
+    "properties": {
+        "secretSourcePipelineId": "VZ_Phrase_Detection"
+    }, 
+    "stages": [
+        {
+            "id": "80d6880b-f624-4c2f-b142-fa95aeb0e58b", 
+            "licensed": true, 
+            "overlaps": "ALL", 
+            "paramToTag": "q", 
+            "params": [], 
+            "phraseBoost": 2.0, 
+            "phraseSlop": 10, 
+            "phrase_boosting_enabled": true, 
+            "secretSourceStageId": "80d6880b-f624-4c2f-b142-fa95aeb0e58b", 
+            "skip": false, 
+            "spell_corrections_enabled": true, 
+            "synonymExpansionBoost": 2.0, 
+            "synonym_expansion_enabled": true, 
+            "tail_rewrites_enabled": true, 
+            "type": "text-tagger", 
+            "useEmbeddedSolrServer": false
+        }, 
+        {
+            "aggrType": "click@doc_id,filters,query", 
+            "boostId": "id", 
+            "boostingMethod": "query-param", 
+            "boostingParam": "boost", 
+            "id": "1233b6cd-3146-4793-8624-c66543535614", 
+            "licensed": true, 
+            "numRecommendations": 10, 
+            "numSignals": 100, 
+            "queryParams": [
+                {
+                    "key": "qf", 
+                    "value": "query_t"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t^50"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t~3^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t~3^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t~3^5"
+                }, 
+                {
+                    "key": "boost", 
+                    "value": "map(query({!field f=query_s v=$q}),0,0,1,20)"
+                }, 
+                {
+                    "key": "mm", 
+                    "value": "50%"
+                }, 
+                {
+                    "key": "defType", 
+                    "value": "edismax"
+                }, 
+                {
+                    "key": "sort", 
+                    "value": "score desc, weight_d desc"
+                }
+            ], 
+            "rollupField": "doc_id_s", 
+            "rollupWeightField": "weight_d", 
+            "rollupWeightStrategy": "max", 
+            "secretSourceStageId": "1233b6cd-3146-4793-8624-c66543535614", 
+            "skip": false, 
+            "type": "recommendation", 
+            "weightExpression": "math:log(weight_d + 1) + 10 * math:log(score+1)"
+        }, 
+        {
+            "id": "cc3ebf32-0913-4b6e-af9f-c9f4e3ff7938", 
+            "licensed": true, 
+            "queryFields": [], 
+            "returnFields": [
+                "*", 
+                "score"
+            ], 
+            "rows": 10, 
+            "secretSourceStageId": "cc3ebf32-0913-4b6e-af9f-c9f4e3ff7938", 
+            "skip": false, 
+            "start": 0, 
+            "type": "search-fields"
+        }, 
+        {
+            "fieldFacets": [], 
+            "id": "dfa9c7e9-0266-4017-9e1f-c4dbe7c37b8d", 
+            "licensed": true, 
+            "secretSourceStageId": "dfa9c7e9-0266-4017-9e1f-c4dbe7c37b8d", 
+            "skip": false, 
+            "type": "facet"
+        }, 
+        {
+            "handler": "select", 
+            "headers": [], 
+            "id": "cf9e543d-c203-44a8-ba58-021656f9e493", 
+            "licensed": true, 
+            "matchPartialFilterQueries": true, 
+            "method": "POST", 
+            "params": [], 
+            "secretSourceStageId": "cf9e543d-c203-44a8-ba58-021656f9e493", 
+            "skip": false, 
+            "type": "query-rules", 
+            "useEmbeddedSolrServer": false, 
+            "useOriginalQueryIfNoRulesMatch": true
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "af942bc7-cfe6-4174-9ab9-7548497c0e37", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "af942bc7-cfe6-4174-9ab9-7548497c0e37", 
+            "skip": false, 
+            "type": "solr-query"
+        }, 
+        {
+            "facetLabelParseDelimiter": "||", 
+            "id": "6747e1e7-e1cb-4ce6-bdae-4e3b5d7271db", 
+            "licensed": true, 
+            "secretSourceStageId": "6747e1e7-e1cb-4ce6-bdae-4e3b5d7271db", 
+            "skip": false, 
+            "type": "query-rules-augment-response"
+        }
+    ]
+}

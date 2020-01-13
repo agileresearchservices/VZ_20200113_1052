@@ -1,0 +1,63 @@
+{
+    "id": "_export_rules", 
+    "properties": {
+        "secretSourcePipelineId": "_export_rules"
+    }, 
+    "stages": [
+        {
+            "id": "sm", 
+            "label": "Set Parameters for Export", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "fl", 
+                    "policy": "replace", 
+                    "value": "*"
+                }, 
+                {
+                    "key": "rows", 
+                    "policy": "replace", 
+                    "value": "5000"
+                }, 
+                {
+                    "key": "wt", 
+                    "policy": "replace", 
+                    "value": "csv"
+                }, 
+                {
+                    "key": "q", 
+                    "policy": "replace", 
+                    "value": "*:*"
+                }
+            ], 
+            "secretSourceStageId": "sm", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "d52a856f-ec3d-41dc-89d3-c5973b0f00d2", 
+            "licensed": true, 
+            "responseSignalsEnabled": false, 
+            "secretSourceStageId": "d52a856f-ec3d-41dc-89d3-c5973b0f00d2", 
+            "skip": false, 
+            "type": "solr-query"
+        }, 
+        {
+            "filters": [
+                {
+                    "exclusive": true, 
+                    "pattern": "^.*$", 
+                    "sourceField": "_version_"
+                }
+            ], 
+            "id": "ns", 
+            "label": "Remove _version_ field for Export", 
+            "licensed": true, 
+            "secretSourceStageId": "ns", 
+            "skip": false, 
+            "type": "result-field-redaction"
+        }
+    ]
+}

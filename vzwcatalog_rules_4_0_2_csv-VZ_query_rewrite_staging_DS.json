@@ -1,0 +1,14 @@
+{
+    "connector": "lucid.fileupload", 
+    "created": "2020-01-07T19:31:24.601Z", 
+    "id": "vzwcatalog_rules_4_0_2_csv-VZ_query_rewrite_staging", 
+    "modified": "2020-01-07T19:31:24.601Z", 
+    "parserId": "VZ", 
+    "pipeline": "_rules_migration", 
+    "properties": {
+        "collection": "VZ_query_rewrite_staging", 
+        "fileId": "vzwcatalog_rules_4_0_2.csv", 
+        "mediaType": "application/octet-stream"
+    }, 
+    "type": "fileupload"
+}

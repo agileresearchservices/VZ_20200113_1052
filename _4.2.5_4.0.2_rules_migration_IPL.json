@@ -1,0 +1,85 @@
+{
+    "id": "_4.2.5_4.0.2_rules_migration", 
+    "properties": {
+        "secretSourcePipelineId": "_4.2.5_4.0.2_rules_migration"
+    }, 
+    "stages": [
+        {
+            "id": "a032fb86-abdc-4893-bb69-a47815bd7f83", 
+            "licensed": true, 
+            "mappings": [
+                {
+                    "operation": "delete", 
+                    "source": "/(.*)_lw_(.*)/"
+                }, 
+                {
+                    "operation": "delete", 
+                    "source": "_version_"
+                }
+            ], 
+            "reservedFieldsMappingAllowed": true, 
+            "secretSourceStageId": "a032fb86-abdc-4893-bb69-a47815bd7f83", 
+            "skip": false, 
+            "type": "field-mapping"
+        }, 
+        {
+            "id": "8mo", 
+            "licensed": true, 
+            "rules": [
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_keys"
+                    ], 
+                    "target": "param_keys", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_values"
+                    ], 
+                    "target": "param_values", 
+                    "writeMode": "overwrite"
+                }, 
+                {
+                    "group": 0, 
+                    "pattern": "[^, ][^,]*[^,]", 
+                    "returnIfNoMatch": "null", 
+                    "source": [
+                        "param_policies"
+                    ], 
+                    "target": "param_policies", 
+                    "writeMode": "overwrite"
+                }
+            ], 
+            "secretSourceStageId": "8mo", 
+            "skip": false, 
+            "type": "regex-extractor"
+        }, 
+        {
+            "id": "6k", 
+            "label": "Process rules", 
+            "licensed": true, 
+            "script": "function(doc){\n  \n  function arraytostring(arr){\n    var fields = arr;\n      var field = [];\n  \t\tfor(var f=0;f<fields.length;f++){\n\t\t      field = field + fields[f]+\",\";\n            }\n    return field.substring(0,field.length-1);\n    \n  }\n\t\n\tif(doc.hasField(\"type\")){\n      // Process banners and redirects\n      if (doc.getFirstFieldValue(\"type\") == \"banner\"){\n        //doc.removeFields(\"type\");\n        doc.setField(\"type\",\"response_value\");\n\t\tdoc.addField(\"keys\",\"banner\");\n\t\tdoc.addField(\"values\",doc.getFirstFieldValue(\"banner_url\"));\n        //doc.removeFields(\"banner_url\");\n\t  }\n\t  if (doc.getFirstFieldValue(\"type\") == \"redirect\"){\n        //doc.removeFields(\"type\");\n        doc.setField(\"type\",\"response_value\");\n\t\tdoc.addField(\"keys\",\"redirect\");\n\t\tdoc.addField(\"values\",doc.getFirstFieldValue(\"redirect_url\"));\t\t\n        //doc.removeFields(\"redirect_url\");\n\t  }\n\t}\n  \n  if(doc.hasField(\"search_terms\")){\n      var fields = doc.getFieldValues(\"search_terms\");\n      var field = [];\n  \t\tfor(var f=0;f<fields.length;f++){\n\t\t      field = field + fields[f]+\",\";\n            }\n       doc.setField(\"search_terms\",field.substring(0,field.length-1));\n     }\n  \n    if(doc.hasField(\"field_values\")){\n     var fields = doc.getFieldValues(\"field_values\");\n      var field = [];\n  \t\tfor(var f=0;f<fields.length;f++){\n\t\t      field = field + fields[f]+\",\";\n            }\n      //doc.setField(\"field_values\",field.substring(0,field.length-1));\n     doc.setField(\"field_values\",arraytostring(doc.getFieldValues(\"field_values\")));\n     }\n  \n\t// Common fields to all rules/documents\n\tdoc.setField(\"doc_type\",doc.getFirstFieldValue(\"doc_type\"));\n\tdoc.addField(\"ruleName\",doc.getFirstFieldValue(\"name\"));\n\tdoc.setField(\"createdAt\",doc.getFirstFieldValue(\"createdOn\"));\n\tdoc.setField(\"updatedAt\",doc.getFirstFieldValue(\"updatedOn\"));\n\tdoc.setField(\"priority\",doc.getFirstFieldValue(\"priority\"));\n\tdoc.setField(\"review\",doc.getFirstFieldValue(\"review\"));\n\tdoc.setField(\"deployed\",doc.getFirstFieldValue(\"deployed\"));\n    doc.setField(\"rollup\",doc.getFirstFieldValue(\"rollup\"));\n  \n  //doc.removeFields(\"createdOn\");\n  //doc.removeFields(\"updatedOn\");\n  //doc.removeFields(\"name\");\n  \n  return doc;\n  }", 
+            "secretSourceStageId": "6k", 
+            "skip": false, 
+            "type": "javascript-index"
+        }, 
+        {
+            "bufferDocsForSolr": false, 
+            "dateFormats": [], 
+            "enforceSchema": true, 
+            "id": "eae7f32c-be3a-47ce-984b-8cda8a8e6fca", 
+            "licensed": true, 
+            "params": [], 
+            "secretSourceStageId": "eae7f32c-be3a-47ce-984b-8cda8a8e6fca", 
+            "skip": false, 
+            "type": "solr-index"
+        }
+    ]
+}

@@ -1,0 +1,118 @@
+{
+    "id": "QP-VZWScheduler", 
+    "properties": {
+        "secretSourcePipelineId": "QP-VZWScheduler"
+    }, 
+    "stages": [
+        {
+            "condition": "(request.hasParam(\"dataSource\"))\n", 
+            "id": "4jp", 
+            "label": "Set Query Parameter", 
+            "licensed": true, 
+            "script": "var dataSource=request.getFirstParam('dataSource');\nvar row=request.getParam('rows');\nvar field=request.getParam('field')\nvar finalDataSource=\"_lw_data_source_s:\"+dataSource;\n//var finalField=\"fl:\"+field;\nrequest.addParam(\"q\",finalDataSource);\nrequest.addParam(\"rows\",row);\nrequest.addParam(\"fl\",field);\n\n", 
+            "secretSourceStageId": "4jp", 
+            "skip": false, 
+            "type": "javascript-query"
+        }, 
+        {
+            "aggrType": "click@doc_id,filters,query", 
+            "boostId": "id", 
+            "boostingMethod": "query-param", 
+            "boostingParam": "boost", 
+            "id": "7d7b8cae-e1c6-46ba-9632-ec9c21a7308a", 
+            "licensed": true, 
+            "numRecommendations": 10, 
+            "numSignals": 100, 
+            "queryParams": [
+                {
+                    "key": "qf", 
+                    "value": "query_t"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t^50"
+                }, 
+                {
+                    "key": "pf", 
+                    "value": "query_t~3^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t^20"
+                }, 
+                {
+                    "key": "pf2", 
+                    "value": "query_t~3^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t^10"
+                }, 
+                {
+                    "key": "pf3", 
+                    "value": "query_t~3^5"
+                }, 
+                {
+                    "key": "boost", 
+                    "value": "map(query({!field f=query_s v=$q}),0,0,1,20)"
+                }, 
+                {
+                    "key": "mm", 
+                    "value": "50%"
+                }, 
+                {
+                    "key": "defType", 
+                    "value": "edismax"
+                }, 
+                {
+                    "key": "sort", 
+                    "value": "score desc, weight_d desc"
+                }
+            ], 
+            "rollupField": "doc_id_s", 
+            "rollupWeightField": "weight_d", 
+            "rollupWeightStrategy": "max", 
+            "secretSourceStageId": "7d7b8cae-e1c6-46ba-9632-ec9c21a7308a", 
+            "skip": false, 
+            "type": "recommendation", 
+            "weightExpression": "math:log(weight_d + 1) + 10 * math:log(score+1)"
+        }, 
+        {
+            "id": "5333e0ff-b124-423b-82f0-ce209660b73b", 
+            "label": "Query Field", 
+            "licensed": true, 
+            "queryFields": [], 
+            "returnFields": [
+                "brand_seo_url_name", 
+                "category_seo_url_name", 
+                "os_seo_url_name", 
+                "special_offers_seo_url_name", 
+                "color_seo_url_name", 
+                "compatible_device_seo_url_name"
+            ], 
+            "rows": 5000, 
+            "secretSourceStageId": "5333e0ff-b124-423b-82f0-ce209660b73b", 
+            "skip": false, 
+            "start": 0, 
+            "type": "search-fields"
+        }, 
+        {
+            "fieldFacets": [], 
+            "id": "67288ac3-3d82-4c6d-ad37-6b272bfa2012", 
+            "licensed": true, 
+            "secretSourceStageId": "67288ac3-3d82-4c6d-ad37-6b272bfa2012", 
+            "skip": false, 
+            "type": "facet"
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "25ea7757-ed73-4a8a-a882-d9f3caf54ac9", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "25ea7757-ed73-4a8a-a882-d9f3caf54ac9", 
+            "skip": false, 
+            "type": "solr-query"
+        }
+    ]
+}

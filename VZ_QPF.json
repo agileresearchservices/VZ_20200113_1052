@@ -1,0 +1,6 @@
+{
+    "collection": "VZ", 
+    "id": "VZ", 
+    "queryPipeline": "VZ", 
+    "searchHandler": "/select"
+}

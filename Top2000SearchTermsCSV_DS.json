@@ -1,0 +1,14 @@
+{
+    "connector": "lucid.fileupload", 
+    "created": "2019-11-05T14:21:22.125Z", 
+    "id": "Top2000SearchTermsCSV", 
+    "modified": "2019-11-05T14:21:22.125Z", 
+    "parserId": "VZ", 
+    "pipeline": "VZ", 
+    "properties": {
+        "collection": "VZ", 
+        "fileId": "VZW_Sample_Search_Terms.csv", 
+        "mediaType": "application/octet-stream"
+    }, 
+    "type": "fileupload"
+}

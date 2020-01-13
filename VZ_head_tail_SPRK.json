@@ -1,0 +1,46 @@
+{
+    "analyzerConfigQuery": "{ \"analyzers\": [ { \"name\": \"StdTokLowerStem\",\"charFilters\": [ { \"type\": \"htmlstrip\" } ],\"tokenizer\": { \"type\": \"standard\" },\"filters\": [{ \"type\": \"lowercase\" },{ \"type\": \"englishminimalstem\" }] }],\"fields\": [{ \"regex\": \".+\", \"analyzer\": \"StdTokLowerStem\" } ]}", 
+    "countField": "count_i", 
+    "dataFormat": "solr", 
+    "enableAutoPublish": false, 
+    "fieldToVectorize": "query", 
+    "filterType": "response", 
+    "headQueryCntBoost": 1.0, 
+    "id": "VZ_head_tail", 
+    "lastTraffic": [
+        0.01
+    ], 
+    "lenScale": 6, 
+    "mainType": "click", 
+    "minCountFilter": 20, 
+    "minCountMain": 1, 
+    "outputCollection": "VZ_job_reports", 
+    "overlapNumBoost": 10.0, 
+    "overlapThreshold": 4, 
+    "overwriteOutput": true, 
+    "queryLenThreshold": 2, 
+    "randomSeed": 1234, 
+    "signalTypeField": "type", 
+    "stopwordsList": [], 
+    "tailRewrite": true, 
+    "tailRewriteCollection": "VZ_query_rewrite_staging", 
+    "topQ": [
+        100.0, 
+        0.01
+    ], 
+    "trafficCount": [
+        5.0
+    ], 
+    "trafficPerc": [
+        0.25, 
+        0.5, 
+        0.75
+    ], 
+    "trainingCollection": "VZ_signals", 
+    "trainingDataFilterQuery": "type:click OR type:response", 
+    "trainingDataFrameConfigOptions": {}, 
+    "trainingDataSamplingFraction": 1.0, 
+    "type": "headTailAnalysis", 
+    "userHead": -1.0, 
+    "userTail": -1.0
+}

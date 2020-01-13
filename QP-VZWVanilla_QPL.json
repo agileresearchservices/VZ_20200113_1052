@@ -1,0 +1,33 @@
+{
+    "id": "QP-VZWVanilla", 
+    "properties": {
+        "secretSourcePipelineId": "QP-VZWVanilla"
+    }, 
+    "stages": [
+        {
+            "id": "0pr", 
+            "label": "Rows", 
+            "licensed": true, 
+            "params": [
+                {
+                    "key": "rows", 
+                    "policy": "replace", 
+                    "value": "50"
+                }
+            ], 
+            "secretSourceStageId": "0pr", 
+            "skip": false, 
+            "type": "set-params"
+        }, 
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "8df0fd2d-278d-4f42-a119-be5b0a780b91", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "8df0fd2d-278d-4f42-a119-be5b0a780b91", 
+            "skip": false, 
+            "type": "solr-query"
+        }
+    ]
+}

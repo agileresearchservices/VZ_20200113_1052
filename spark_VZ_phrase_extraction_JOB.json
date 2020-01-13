@@ -1,0 +1,13 @@
+{
+    "default": false, 
+    "enabled": true, 
+    "resource": "spark:VZ_phrase_extraction", 
+    "triggers": [
+        {
+            "enabled": true, 
+            "otherJob": "spark:VZ_spell_correction", 
+            "triggerType": "on_success", 
+            "type": "job_completion"
+        }
+    ]
+}

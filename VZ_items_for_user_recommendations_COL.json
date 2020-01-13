@@ -1,0 +1,14 @@
+{
+    "commitWithin": 10000, 
+    "createdAt": "2019-12-12T00:02:51.374Z", 
+    "id": "VZ_items_for_user_recommendations", 
+    "metadata": {}, 
+    "relatedCollectionId": "VZ", 
+    "searchClusterId": "default", 
+    "solrParams": {
+        "name": "VZ_items_for_user_recommendations", 
+        "numShards": 1, 
+        "replicationFactor": 1
+    }, 
+    "type": "RECOMMENDATIONS"
+}

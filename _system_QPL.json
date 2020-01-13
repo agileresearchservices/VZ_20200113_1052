@@ -1,0 +1,18 @@
+{
+    "id": "_system", 
+    "properties": {
+        "secretSourcePipelineId": "_system"
+    }, 
+    "stages": [
+        {
+            "allowFederatedSearch": false, 
+            "httpMethod": "POST", 
+            "id": "fda305b8-a4c1-4adb-8eab-00cc345205a8", 
+            "licensed": true, 
+            "responseSignalsEnabled": true, 
+            "secretSourceStageId": "fda305b8-a4c1-4adb-8eab-00cc345205a8", 
+            "skip": false, 
+            "type": "solr-query"
+        }
+    ]
+}
