@@ -1,11 +1,11 @@
 {
     "dataUri": "/admin/App-Tile-07-460x160.png", 
-    "description": "From scratch using KH's algorithm rules and top 2000 search terms", 
+    "description": "Fusion 4.2.5. Built from scratch using KH's algorithm rules and top 2000 search terms", 
     "id": "VZ", 
     "name": "VZ", 
     "properties": {
         "headerImageName": "headerImage7", 
-        "previousCollectionId": "VZ_query_rewrite_staging", 
+        "previousCollectionId": "VZ", 
         "tileColor": "apps-red"
     }
 }

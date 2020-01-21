@@ -5,12 +5,21 @@
     }, 
     "stages": [
         {
+            "id": "a7c", 
+            "label": "Phrase Detection", 
+            "licensed": true, 
+            "script": "/*******************************************************************************************\n* Title: VZ Phrase Detection QPL JS Solr Config File Lookup\n* Author: Kevin M. Butler  \n* Date: 1/13/2019  \n* Purpose: Customer requested a means to maintain a text valued list of phrases  \n*   within the Solr Config file area so they may edit it within the Fusion  \n*   Admin text editor. This code compares the 'q' parameter to the list of   \n*   words and if found, wraps the entire query in quotes and updates the 'q' param  \n*   in the query request pipeline before submitting the query to Solr.   \n* Credits: Much of this code was referenced with Andrew Shumway's Blacklist example  \n* Parameters: \n*  1.) debug=true enables all logging from this stage\n*  2.) phraseListReload = true forces a reload of the phraseList.txt at any time\n* Notes:\n*   The phrase list will automatically reload every 24 hours AND whenever JVM garbage \n*   collection executes. \n*******************************************************************************************/\n\n(function () {\n    \"use strict\";\n\n    // Imports\n    var ArrayList = Java.type('java.util.ArrayList');\n    var StringReader = Java.type('java.io.StringReader');\n    var BufferedReader = Java.type('java.io.BufferedReader');\n    var HttpGet = Java.type('org.apache.http.client.methods.HttpGet');\n    var HttpClientBuilder = Java.type('org.apache.http.impl.client.HttpClientBuilder');\n    var jsonMimes = {\n        'application/json':true,\n        'application/schema+json':true,\n        'application/vnd.lucidworks-appkit-export+json':true\n    };\n    var IOUtils = Java.type('org.apache.commons.io.IOUtils');\n\n    // Local variables\n    var PhraseListFileName = 'http://localhost:8983/solr/admin/zookeeper?detail=true&path=%2Fconfigs%2FVZ%2FphraseList.txt&wt=json';\n    var phraseList = null;\n    var phraseListLock = 0;\n    var phraseListLastModified = null;\n    var debug = false;\n\n    /** Perform an HTTP GET request for a URL **/\n    function doHttpGet(url){\n        debug?logger.info('BUILDING HTTP REQUEST : ' ):null;\n        var client = HttpClientBuilder.create().build();\n        var request = new HttpGet(url);\n        debug?logger.info('SUBMITTING HTTP REQUEST : ' + request):null;\n        var rsp = client.execute(request);\n        return rsp;\n    };\n\n    /** Perform an HTTP GET request for a URL and parse the results to string. **/\n    function queryHttp2String(url,charSetName) {\n        charSetName = charSetName || 'UTF-8';\n        var responseString = '';\n        var rsp = doHttpGet(url);\n        debug?logger.info('Http2String got resp: ' + rsp ):null;\n        if (rsp && rsp.getEntity()) {\n            var entity = rsp.getEntity();\n            var contentType = rsp.getEntity().getContentType();\n            if(contentType){\n                var ctv = contentType.getValue();\n                ctv = ctv.split(';')[0].trim();\n                debug?logger.info('Http2String contentType is {}',ctv):null;\n                if( jsonMimes[ctv] || ctv.startsWith('text')){\n                    debug?logger.info('Http2String Getting entity contents as String'):null;\n                    responseString = IOUtils.toString(entity.getContent(), charSetName);\n                    }\n                }\n                else{\n                    debug?logger.info('Http2String is not text or json'):null;\n                }\n            }else{\n                debug?logger.info('Http2String Empty or missing response entity'):null;\n            }\n        return responseString\n    };\n\n    /** Perform an HTTP GET request for a URL and parse the results to JSON. **/\n    function queryHttp2Json(url, charSetName){\n        charSetName = charSetName || 'UTF-8'\n        var responseString = queryHttp2String(url,charSetName);\n        debug?logger.info('MESSAGE HTTP_GET responseString \"' + responseString + '\"' ):null;\n        return JSON.parse(responseString);\n    };\n\n    /** Check whether the time has expired to refresh the phrase list **/\n    function checkLastTimeStamp(){\n        var minutes = 1000 * 60;\n        var hours = minutes * 60;\n        var days = hours * 24;\n\n        if(null == phraseListLastModified || (phraseListLastModified > phraseListLastModified + days)){\n            phraseList = null;\n            phraseListLastModified = Date.now();\n        }\n\n        debug?logger.info('phraseListLastModified = ' + phraseListLastModified):null;\n        debug?logger.info('phraseListLastModified + 1 day = ' + (phraseListLastModified + days)):null;\n        debug?logger.info('phraseListLastModified > +1 day = ' + (phraseListLastModified > phraseListLastModified + days)):null;\n\n        return;\n    };\n\n    /** Lazy loads phraseList.txt from Solr config **/\n    function initPhraseList(){\n        checkLastTimeStamp();\n        if(null == phraseList && phraseListLock == 0){\n            phraseListLock = 1;\n\n            var json = queryHttp2Json(PhraseListFileName);\n            var phraseText = '';\n\n            if(json && json.znode.data){\n                phraseText = json.znode.data;\n            }\n            else{\n                logger.error(\"expected json to contain json.value but json is {} and value is {}\",json, json.value?json.value:undefined);\n            }\n\n            var tempList = new ArrayList();\n            try{\n                var br = new BufferedReader(new StringReader(phraseText));\n                var sCurrentLine = null;\n\n                while ((sCurrentLine = br.readLine()) != null) {\n                    tempList.add(sCurrentLine.toLowerCase());\n                }\n\n                phraseList = tempList;\n            } catch (e) {\n                logger.error('Exception reading phraseList.txt from Solr Config' + e);\n            }\n        }\n\n        phraseListLock = 0;\n    };\n\n    /** Return re-written version of query if matched otherwise return orignal query **/\n    function matchPhrase(termString){\n        var phrase = termString.trim();\n        phrase = phrase.toLowerCase();\n        for (var i = 0; i < phraseList.length; i ++){\n            var match = phraseList[i].trim();\n            var idx = phrase.indexOf(match);\n            debug?logger.info('checking {} for {} with idx {} and match.len {}',phrase,match,idx,match.length):null;\n\n            if(idx >= 0){\n                phrase = '\\\"' + match + '\\\"' + ' ' + phrase;\n            }\n            debug?logger.info('phrase is now: \\'{}\\'' , phrase):null;\n        }\n\n        return phrase.trim();\n    };\n\n// Main function \nreturn function(request,response, ctx, collection, solrServer, solrServerFactory) {\n    // Timing\n    var startTime = Date.now();\n\n    // Check for debug value\n    var checkDebug = request.getFirstParam('debug');\n    checkDebug == 'true'?(debug=true):(debug=false);\n    debug?logger.info('debug listed as: ' + debug):null;\n    \n    // Check for forced reload\n    var reload = request.getFirstParam('phraseListReload');\n    debug?logger.info('reload = ' + reload):null;\n    if(reload == 'true') {\n        phraseList = null;\n        debug?logger.info('PhraseListReload == TRUE, reloading phraseList.txt'):null;\n    }\n    //lazy load phraseList.txt from Solr config\n    initPhraseList();\n    debug?logger.info('Phrase List: ' + phraseList):null;\n\n    // Perform phrase detection\n    var q = request.getFirstParam('q');\n    var phraseMatched = matchPhrase(q);\n    //rewrite\n    request.putSingleParam('q',phraseMatched);\n    request.putSingleParam('phraseMatch_original_q',q);\n\n    // Timing\n  \tdebug?logger.info('Total stage time: ' + (Date.now() - startTime)):null;\n    };\n})();", 
+            "secretSourceStageId": "a7c", 
+            "skip": false, 
+            "type": "javascript-query"
+        }, 
+        {
             "id": "i1l", 
             "label": "Extend search fields where 'q' >2", 
             "licensed": true, 
             "script": "/**********************\n* Date: 12/31/2019\n* Author: Kevin M. Butler\n* Query Stage Name: Extend search fields where 'q' >2\n* Purpose: Customer requested the ability to modify MM and QF at query time based on the\n* number of search terms in the query. This function reads the query param, counts the terms,\n* then if the number of search terms is >= 3, MM is modified and QF search fields is increased.\n* Note: Need to verify logic with customer\n***********************/\nfunction (request,response,ctx) {\n  if(!request.hasParam(\"q\"))\n    return;\n  var qparams = request.getFirstParam(\"q\");\n  var qwords = qparams.split(\" \");\n  request.putSingleParam(\"qwords\",qwords.length);\n  if(qwords.length >=3){\n  \t// remove MM and change to x%\n    request.removeParam(\"mm\");\n    request.addParam(\"mm\",\"90%\");\n    // remove QF parameter and add new search fields\n    request.removeParam(\"qf\");\n    request.addParam(\"qf\",\"title\");\n    request.addParam(\"qf\",\"id\");\n  }\n  else{\n  \trequest.addParam(\"otherStuff\",\"Didn't make the cut\");\n  }\n    return;\n}\n", 
             "secretSourceStageId": "i1l", 
-            "skip": true, 
+            "skip": false, 
             "type": "javascript-query"
         }, 
         {
@@ -127,16 +136,16 @@
                 {
                     "key": "boost", 
                     "policy": "append", 
-                    "value": "sum(1,recip(ageInDays,40,10000,10000))"
+                    "value": "sum(1,recip(popularity,40,10000,10000))"
                 }, 
                 {
                     "key": "boost", 
                     "policy": "append", 
-                    "value": "if(and(lte(ageInDays,30),eq(contentType_s,\"device\")),2,1)"
+                    "value": "if(and(lte(popularity,30),eq(contentType_s,\"device\")),2,1)"
                 }
             ], 
             "secretSourceStageId": "xv", 
-            "skip": true, 
+            "skip": false, 
             "type": "set-params"
         }, 
         {
@@ -152,7 +161,7 @@
                 }
             ], 
             "secretSourceStageId": "cjf", 
-            "skip": true, 
+            "skip": false, 
             "type": "set-params"
         }, 
         {
@@ -218,7 +227,7 @@
                 "scaleMin": 1.03
             }, 
             "secretSourceStageId": "efb616e5-14c1-4757-8b59-5a45b05b637d", 
-            "skip": true, 
+            "skip": false, 
             "type": "recommendation", 
             "weightExpression": "math:log(weight_d + 1) + 10 * math:log(score+1)"
         }, 
